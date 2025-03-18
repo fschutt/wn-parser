@@ -172,3 +172,190 @@ abominate v 1 2 @ + 1 0 01774426
 abort v 3 4 @ ~ * + 3 0 00353839 00060063 00059899  
 abound v 2 3 @ ^ + 2 1 02715279 02715595  
 "#;
+
+
+// Replace `wn_parser` with the actual name of your crate.
+use wn_parser::common::SynsetType;
+use wn_parser::data::parse_data_line;
+use wn_parser::index::parse_index_line;
+use wn_parser::sense::parse_sense_line;
+
+#[test]
+fn test_parse_data_adjectives() {
+    let mut count = 0;
+    // DATA_ADJ is defined in this module (do not duplicate its content here)
+    for line in DATA_ADJ.lines() {
+        let line = line.trim();
+        if line.is_empty() {
+            continue;
+        }
+        let synset = parse_data_line(line).expect("Failed to parse adjective data line");
+        // Check that the synset type is an adjective type
+        match synset.ss_type {
+            SynsetType::Adjective | SynsetType::AdjectiveSatellite => (),
+            _ => panic!("Expected adjective type, got {:?}", synset.ss_type),
+        }
+        count += 1;
+    }
+    // Expecting 7 adjective data lines based on the test data.
+    assert_eq!(count, 7, "Unexpected number of adjective lines parsed");
+}
+
+#[test]
+fn test_parse_data_adverbs() {
+    let mut count = 0;
+    for line in DATA_ADV.lines() {
+        let line = line.trim();
+        if line.is_empty() {
+            continue;
+        }
+        let synset = parse_data_line(line).expect("Failed to parse adverb data line");
+        // Check that the synset type is adverb (r)
+        assert!(
+            matches!(synset.ss_type, SynsetType::Adverb),
+            "Expected adverb type, got {:?}",
+            synset.ss_type
+        );
+        count += 1;
+    }
+    // Based on the provided test data, expect 15 adverb lines.
+    assert_eq!(count, 15, "Unexpected number of adverb lines parsed");
+}
+
+#[test]
+fn test_parse_data_nouns() {
+    let mut count = 0;
+    for line in DATA_NOUN.lines() {
+        let line = line.trim();
+        if line.is_empty() {
+            continue;
+        }
+        let synset = parse_data_line(line).expect("Failed to parse noun data line");
+        // Check that the synset type is noun (n)
+        assert!(
+            matches!(synset.ss_type, SynsetType::Noun),
+            "Expected noun type, got {:?}",
+            synset.ss_type
+        );
+        count += 1;
+    }
+    // There are 10 noun lines in the test data.
+    assert_eq!(count, 10, "Unexpected number of noun lines parsed");
+}
+
+#[test]
+fn test_parse_data_verbs() {
+    let mut count = 0;
+    for line in DATA_VERB.lines() {
+        let line = line.trim();
+        if line.is_empty() {
+            continue;
+        }
+        let synset = parse_data_line(line).expect("Failed to parse verb data line");
+        // Check that the synset type is verb (v)
+        assert!(
+            matches!(synset.ss_type, SynsetType::Verb),
+            "Expected verb type, got {:?}",
+            synset.ss_type
+        );
+        count += 1;
+    }
+    // The test data contains 8 verb lines.
+    assert_eq!(count, 8, "Unexpected number of verb lines parsed");
+}
+
+#[test]
+fn test_parse_index_adjectives() {
+    let mut count = 0;
+    for line in INDEX_ADJ.lines() {
+        let line = line.trim();
+        if line.is_empty() {
+            continue;
+        }
+        let index_entry = parse_index_line(line).expect("Failed to parse adjective index line");
+        // Ensure the part-of-speech is adjective
+        assert!(
+            matches!(index_entry.pos, SynsetType::Adjective),
+            "Expected adjective pos, got {:?}",
+            index_entry.pos
+        );
+        count += 1;
+    }
+    assert!(count > 0, "No adjective index entries parsed");
+}
+
+#[test]
+fn test_parse_index_adverbs() {
+    let mut count = 0;
+    for line in INDEX_ADV.lines() {
+        let line = line.trim();
+        if line.is_empty() {
+            continue;
+        }
+        let index_entry = parse_index_line(line).expect("Failed to parse adverb index line");
+        // Ensure the part-of-speech is adverb (r)
+        assert!(
+            matches!(index_entry.pos, SynsetType::Adverb),
+            "Expected adverb pos, got {:?}",
+            index_entry.pos
+        );
+        count += 1;
+    }
+    assert!(count > 0, "No adverb index entries parsed");
+}
+
+#[test]
+fn test_parse_index_nouns() {
+    let mut count = 0;
+    for line in INDEX_NOUN.lines() {
+        let line = line.trim();
+        if line.is_empty() {
+            continue;
+        }
+        let index_entry = parse_index_line(line).expect("Failed to parse noun index line");
+        // Ensure the part-of-speech is noun
+        assert!(
+            matches!(index_entry.pos, SynsetType::Noun),
+            "Expected noun pos, got {:?}",
+            index_entry.pos
+        );
+        count += 1;
+    }
+    assert!(count > 0, "No noun index entries parsed");
+}
+
+#[test]
+fn test_parse_index_verbs() {
+    let mut count = 0;
+    for line in INDEX_VERB.lines() {
+        let line = line.trim();
+        if line.is_empty() {
+            continue;
+        }
+        let index_entry = parse_index_line(line).expect("Failed to parse verb index line");
+        // Ensure the part-of-speech is verb
+        assert!(
+            matches!(index_entry.pos, SynsetType::Verb),
+            "Expected verb pos, got {:?}",
+            index_entry.pos
+        );
+        count += 1;
+    }
+    assert!(count > 0, "No verb index entries parsed");
+}
+
+#[test]
+fn test_parse_index_senses() {
+    let mut count = 0;
+    for line in INDEX_SENSE.lines() {
+        let line = line.trim();
+        if line.is_empty() {
+            continue;
+        }
+        let sense_entry = parse_sense_line(line).expect("Failed to parse sense index line");
+        // Check that the sense key is not empty and has the expected format
+        assert!(!sense_entry.sense_key.is_empty(), "Sense key is empty");
+        count += 1;
+    }
+    assert!(count > 0, "No sense index entries parsed");
+}
