@@ -88,23 +88,17 @@ pub fn parse_data_line(line: &str) -> Result<Synset, &'static str> {
     // For verbs, parse frames
     let mut frames = Vec::new();
     if matches!(ss_type, SynsetType::Verb) && current_index < fields.len() {
-        if fields[current_index] == "+" && current_index + 2 < fields.len() {
+        // Check if there's a frame count
+        if let Ok(f_cnt) = u16::from_str(fields[current_index]) {
             current_index += 1;
             
-            let f_num = u16::from_str(fields[current_index]).map_err(|_| "Invalid frame number")?;
-            current_index += 1;
-            
-            let w_num = u16::from_str_radix(fields[current_index], 16).map_err(|_| "Invalid word number")?;
-            current_index += 1;
-            
-            frames.push(Frame {
-                frame_number: f_num,
-                word_number: w_num,
-            });
-            
-            // Parse additional frames
-            while current_index + 2 < fields.len() && fields[current_index] == "+" {
-                current_index += 1;
+            // Parse frames
+            for _ in 0..f_cnt {
+                if current_index + 2 >= fields.len() || fields[current_index] != "+" {
+                    return Err("Invalid frame format");
+                }
+                
+                current_index += 1; // Skip the '+'
                 
                 let f_num = u16::from_str(fields[current_index]).map_err(|_| "Invalid frame number")?;
                 current_index += 1;
@@ -119,7 +113,7 @@ pub fn parse_data_line(line: &str) -> Result<Synset, &'static str> {
             }
         }
     }
-    
+
     Ok(Synset {
         offset,
         lex_filenum,
