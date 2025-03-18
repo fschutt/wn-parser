@@ -1,6 +1,7 @@
 use std::collections::HashMap;
+use serde_derive::{Serialize, Deserialize};
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
 pub enum PointerSymbol {
     Antonym,               // !
     Hypernym,              // @
@@ -73,7 +74,7 @@ impl From<&str> for PointerSymbol {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
 pub enum SynsetType {
     Noun,         // n
     Verb,         // v
@@ -96,7 +97,7 @@ impl From<&str> for SynsetType {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Pointer {
     pub symbol: PointerSymbol,
     pub offset: u64,
@@ -104,19 +105,19 @@ pub struct Pointer {
     pub source_target: (u16, u16), // Source and target word numbers
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Word {
     pub word: String,
     pub lex_id: u8,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Frame {
     pub frame_number: u16,
     pub word_number: u16, // 0 means all words in the synset
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Synset {
     pub offset: u64,
     pub lex_filenum: u8,
@@ -127,7 +128,7 @@ pub struct Synset {
     pub gloss: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
 pub struct IndexEntry {
     pub lemma: String,
     pub pos: SynsetType,
@@ -138,7 +139,7 @@ pub struct IndexEntry {
     pub synset_offsets: Vec<u64>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SenseEntry {
     pub sense_key: String,
     pub synset_offset: u64,
